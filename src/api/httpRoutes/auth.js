@@ -1,4 +1,4 @@
-/**@typedef {import('./router').HttpRoute} HttpRoute */
+/**@typedef {import('../router').HttpRoute} HttpRoute */
 
 /**@type {HttpRoute} */
 const signup = {
