@@ -6,6 +6,7 @@ export default class AuthService {
     this.users = new Map();
   }
 
+  // this is a command
   async signin({ username, password }) {
     const user = this.users.get(username);
     if (!user) return new Error('No user found');
@@ -15,6 +16,7 @@ export default class AuthService {
     return token;
   }
 
+  // this is a command
   async signup(user) {
     this.users.set(user.name, user);
     this.bus.publish('signup', { email: user.email });

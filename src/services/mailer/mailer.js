@@ -19,10 +19,12 @@ export default class MailerService {
     });
   }
 
+  // this is for event processing
   #generateEmail({ title, email }) {
     return `${title} ${email}`;
   }
 
+  // this is for event processing
   #sendEmail({ email }) {
     console.log('Email sent');
     return Promise.resolve(email);
