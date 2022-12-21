@@ -8,7 +8,7 @@ and private methods - for pub/sub only
 
 commands are mapped to routes
 
-currently only bus injected to services and it is a core mediator for communication inside one instance
+currently only bus injected to services and it is a core mediator for communication inside application
 
 tiny usage of framework
 
