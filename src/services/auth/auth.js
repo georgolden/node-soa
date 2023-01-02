@@ -1,26 +1,30 @@
 import { randomUUID } from 'node:crypto';
+import partial from '../../util/partial';
 
-export default class AuthService {
-  constructor({ bus }) {
-    this.bus = bus;
-    this.users = new Map();
-  }
+var signup = (dependencies, data) => {
+  const { bus, userModel } = dependencies;
 
-  // this is a command
-  async signin({ username, password }) {
-    const user = this.users.get(username);
-    if (!user) return new Error('No user found');
-    if (user.password !== password) return new Error('Invalid password');
-    this.bus.publish('signin', { email: user.email });
-    const token = randomUUID();
-    return token;
-  }
+  userModel.set(data.username, data);
+  bus.publish('signup', { email: data.email });
 
-  // this is a command
-  async signup(user) {
-    this.users.set(user.name, user);
-    this.bus.publish('signup', { email: user.email });
-    const token = randomUUID();
-    return token;
-  }
-}
+  const token = randomUUID();
+  return { token };
+};
+
+var signin = (dependencies, data) => {
+  const { bus, userModel } = dependencies;
+  const { username, password } = data;
+  const user = userModel.get(username);
+  if (!user) throw new Error('No user found');
+  if (user.password !== password) throw new Error('Invalid password');
+  bus.publish('signin', { email: user.email });
+  const token = randomUUID();
+  return { token };
+};
+
+export var commands = { signin, signup };
+
+export var initCommands = (deps) => ({
+  signin: partial(signin, deps),
+  signup: partial(signup, deps),
+});

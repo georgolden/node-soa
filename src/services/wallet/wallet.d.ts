@@ -10,6 +10,7 @@ export interface Wallet {
   owner: UserId;
   balance: Money;
   withdrawn: Money;
+  transactionsHistory: Transaction[];
 }
 
 // Write model
