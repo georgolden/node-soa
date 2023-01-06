@@ -1,6 +1,4 @@
-var partial =
+export const partial =
   (fn, ctx) =>
-  (...args) =>
-    fn(ctx, ...args);
-
-export default partial;
+    (...args) =>
+      fn(ctx, ...args);

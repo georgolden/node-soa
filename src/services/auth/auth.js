@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
-import partial from '../../util/partial';
+import { partial } from '../../util/partial.js';
 
-var signup = (dependencies, data) => {
+const signup = (dependencies, data) => {
   const { bus, userModel } = dependencies;
 
   userModel.set(data.username, data);
@@ -11,7 +11,7 @@ var signup = (dependencies, data) => {
   return { token };
 };
 
-var signin = (dependencies, data) => {
+const signin = (dependencies, data) => {
   const { bus, userModel } = dependencies;
   const { username, password } = data;
   const user = userModel.get(username);
@@ -22,9 +22,9 @@ var signin = (dependencies, data) => {
   return { token };
 };
 
-export var commands = { signin, signup };
+export const commands = { signin, signup };
 
-export var initCommands = (deps) => ({
+export const initCommands = (deps) => ({
   signin: partial(signin, deps),
   signup: partial(signup, deps),
 });

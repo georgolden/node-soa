@@ -1,13 +1,11 @@
-var generateEmail = ({ title, email }) => {
-  return `${title} ${email}`;
-};
+const generateEmail = ({ title, email }) => `${title} ${email}`;
 
-var sendEmail = ({ email }) => {
+const sendEmail = ({ email }) => {
   console.log('Email sent');
   return Promise.resolve(email);
 };
 
-var signinEventHandler = async (event) => {
+const signinEventHandler = async (event) => {
   const email = generateEmail({
     ...event,
     title: 'You are signed in',
@@ -15,7 +13,7 @@ var signinEventHandler = async (event) => {
   await sendEmail({ email });
 };
 
-var signupEventHandler = async (event) => {
+const signupEventHandler = async (event) => {
   const email = generateEmail({
     ...event,
     title: 'You are signed up',
@@ -23,14 +21,14 @@ var signupEventHandler = async (event) => {
   await sendEmail({ email });
 };
 
-export var internal = { generateEmail, sendEmail };
+export const internal = { generateEmail, sendEmail };
 
-export var eventHandlers = {
+export const eventHandlers = {
   signin: signinEventHandler,
   signup: signupEventHandler,
 };
 
-export var initEventHandlers = (deps) => {
+export const initEventHandlers = (deps) => {
   const { bus } = deps;
   for (const [eventName, handler] of Object.entries(eventHandlers)) {
     bus.subscribe(eventName, handler);
