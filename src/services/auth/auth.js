@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { partial } from '../../util/partial.js';
+import { partial } from '@oldbros/shiftjs';
 
 const signup = (dependencies, data) => {
   const { bus, userModel } = dependencies;

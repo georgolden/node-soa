@@ -28,6 +28,7 @@
     "fastify": "^4.10.2"
   },
   "devDependencies": {
+    "@oldbros/shiftjs": "^1.0.0-beta1",
     "@oldbros/tsconfig": "^1.0.1",
     "@types/node": "^18.11.18",
     "@types/ws": "^8.5.3",

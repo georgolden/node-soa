@@ -22,7 +22,7 @@ export class Bus {
   command(commandName, payload) {
     const [serviceName, cmdName] = commandName.split('.');
     const service = this.#services.get(serviceName);
-    return service[cmdName](payload);
+    return service[cmdName]({ metadata, data: payload });
   }
 
   registerService(name, service) {
