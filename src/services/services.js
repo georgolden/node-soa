@@ -1,4 +1,7 @@
-import AuthService from './auth/auth.js';
-import MailerService from './mailer/mailer.js';
+import { initCommands } from './auth/auth.js';
+import { initEventHandlers } from './mailer/mailer.js';
 
-export default { auth: AuthService, mailer: MailerService };
+export default {
+  auth: { initCommands },
+  mailer: { initEventHandlers },
+};

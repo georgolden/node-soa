@@ -1,3 +1,5 @@
+import { partial } from '@oldbros/shiftjs';
+
 const generateEmail = ({ title, email }) => `${title} ${email}`;
 
 const sendEmail = ({ email }) => {
@@ -13,7 +15,7 @@ const signinEventHandler = async (deps, event) => {
   await sendEmail({ email });
 };
 
-const signupEventHandler = async (event) => {
+const signupEventHandler = async (deps, event) => {
   const email = generateEmail({
     ...event,
     title: 'You are signed up',
@@ -28,9 +30,7 @@ export const eventHandlers = {
   'auth.signup.event': signupEventHandler,
 };
 
-export const initEventHandlers = (deps) => {
-  const { bus } = deps;
-  for (const [eventName, handler] of Object.entries(eventHandlers)) {
-    bus.subscribe(eventName, partial(handler, deps));
-  }
-};
+export const initEventHandlers = (deps) => ({
+  'auth.signin.event': partial(signinEventHandler, deps),
+  'auth.signup.event': partial(signupEventHandler, deps),
+});

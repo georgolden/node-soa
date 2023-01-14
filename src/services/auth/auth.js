@@ -2,9 +2,9 @@ import { randomUUID } from 'node:crypto';
 import { partial } from '@oldbros/shiftjs';
 
 const signup = (dependencies, data) => {
-  const { bus, userModel } = dependencies;
+  const { bus, db } = dependencies;
 
-  userModel.set(data.username, data);
+  db.userModel.set(data.username, data);
   bus.publish('signup', { email: data.email });
 
   const token = randomUUID();
@@ -12,9 +12,9 @@ const signup = (dependencies, data) => {
 };
 
 const signin = (dependencies, data) => {
-  const { bus, userModel } = dependencies;
+  const { bus, db } = dependencies;
   const { username, password } = data;
-  const user = userModel.get(username);
+  const user = db.userModel.get(username);
   if (!user) throw new Error('No user found');
   if (user.password !== password) throw new Error('Invalid password');
   bus.publish('signin', { email: user.email });
