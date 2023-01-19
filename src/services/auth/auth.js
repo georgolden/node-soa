@@ -30,7 +30,6 @@ export const signin = async (deps, { data }) => {
 
   const { id, password: hash } = await user.selectByEmail(db, email);
   if (!id) throw new Error('No user found');
-  console.dir({ id, password: hash });
   const valid = await validatePass(password, hash);
   if (!valid) throw new Error('Invalid password');
 

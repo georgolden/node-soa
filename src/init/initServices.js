@@ -3,8 +3,6 @@ import { Bus } from '../infra/bus.js';
 import * as postgres from '../infra/pg.js';
 import * as redis from '../infra/redis.js';
 
-console.log(serviceDeclarations);
-
 export const initServices = async () => {
   const db = await postgres.start();
   const cache = await redis.start();

@@ -2,15 +2,18 @@
 import { createClient } from 'redis';
 import { redis } from './config.js';
 
-console.dir(redis);
+export const make = () => {
+  const client = createClient({ url: redis.connectionUrl });
+  client.on('error', console.error);
+  return client;
+};
 
 /** @returns {Promise<RedisClient>} */
 export const start = async () => {
   if (!redis.connectionUrl) {
     throw new Error('Please set REDIS_URL environment variable');
   };
-  const client = createClient({ url: redis.connectionUrl });
-  client.on('error', console.error);
+  const client = make();
   await client.connect();
   return client;
 };

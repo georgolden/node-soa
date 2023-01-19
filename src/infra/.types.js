@@ -22,7 +22,7 @@
  * @callback FnSubscribe
  * @param {string} eventName
  * @param {AnyEventHandler} handler
- * @returns {boolean}
+ * @returns {any}
  */
 
 /**
