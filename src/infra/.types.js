@@ -6,6 +6,7 @@
 
 /**
  * @typedef {Object} ServiceMetadata
+ * @property {string} name
  * @property {string[]} dependencies
  */
 
@@ -13,10 +14,8 @@
  * Interface for Service to be applicable with infrastructure
  * Each service must return this form init handler
  * @typedef {Object} IService
- * @property {string} name
  * @property {AnyServiceCommands | null} commands
  * @property {{[key: string]: AnyFunc} | null} eventHandlers
- * @property {ServiceMetadata} metadata
  */
 
 /**

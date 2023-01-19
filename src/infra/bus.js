@@ -39,7 +39,7 @@ export class Bus {
   }
 
   /** @type {FnRegister} */
-  register(name, service) {
-    this.#services.set(name, service);
+  register(name, commands) {
+    this.#services.set(name, commands);
   }
 }

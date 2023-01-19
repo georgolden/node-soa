@@ -1,5 +1,3 @@
-import { partial } from '@oldbros/shiftjs';
-
 const generateEmail = ({ title, email }) => `${title} ${email}`;
 
 const sendEmail = ({ email }) => {
@@ -7,7 +5,7 @@ const sendEmail = ({ email }) => {
   return Promise.resolve(email);
 };
 
-const signinEventHandler = async (deps, event) => {
+export const signinEventHandler = async (deps, event) => {
   const email = generateEmail({
     ...event,
     title: 'You are signed in',
@@ -15,7 +13,7 @@ const signinEventHandler = async (deps, event) => {
   await sendEmail({ email });
 };
 
-const signupEventHandler = async (deps, event) => {
+export const signupEventHandler = async (deps, event) => {
   const email = generateEmail({
     ...event,
     title: 'You are signed up',
@@ -24,13 +22,3 @@ const signupEventHandler = async (deps, event) => {
 };
 
 export const internal = { generateEmail, sendEmail };
-
-export const eventHandlers = {
-  'auth.signin.event': signinEventHandler,
-  'auth.signup.event': signupEventHandler,
-};
-
-export const initEventHandlers = (deps) => ({
-  'auth.signin.event': partial(signinEventHandler, deps),
-  'auth.signup.event': partial(signupEventHandler, deps),
-});
