@@ -5,7 +5,7 @@ import { initRoutes } from './init/initRoutes.js';
 
 const server = fastify({ logger: true });
 
-const { bus } = initServices();
+const { bus } = await initServices();
 const fastifyRoutes = initRoutes({ bus });
 
 console.dir(fastifyRoutes, { depth: 10 });

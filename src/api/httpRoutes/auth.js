@@ -17,6 +17,14 @@ const signin = {
 };
 
 /**@type {HttpRoute} */
+const validate = {
+  method: 'POST',
+  url: '/validate',
+  command: 'auth.validate',
+  dataSource: 'JSONBody',
+};
+
+/**@type {HttpRoute} */
 const refresh = {
   method: 'POST',
   url: '/refresh',
@@ -32,4 +40,4 @@ const signout = {
   dataSource: 'JSONBody',
 };
 
-export default [signup, signin, refresh, signout];
+export default [signup, signin, refresh, signout, validate];
