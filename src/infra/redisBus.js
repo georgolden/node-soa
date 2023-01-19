@@ -25,6 +25,7 @@ const returnError = async (fn, ...args) => {
  * @implements {ICommand}
  */
 export class RedisBus {
+  #publishedOnce = false;
   #calls = new Map();
   /** @type {number} */
   #callId = 0;
@@ -54,7 +55,11 @@ export class RedisBus {
     ]);
   }
 
-  publish(eventName, event) {
+  async publish(eventName, event) {
+    if (!this.#publishedOnce) {
+      await this.waitPubSub();
+      this.#publishedOnce = true;
+    }
     const json = JSON.stringify(event);
     return this.#cmdClient.publish(eventName, json);
   }
@@ -98,5 +103,15 @@ export class RedisBus {
         await this.#cmdClient.publish(resKey, packet);
       });
     }
+    return this.waitPubSub();
+  }
+
+  async waitPubSub() {
+    const w8Key = 'system:waitPubSub';
+    await new Promise(async (resolve, _reject) => {
+      await this.#subClient.subscribe(w8Key, (msg) => resolve(msg));
+      await this.#cmdClient.publish(w8Key, 'true');
+    });
+    return this.#subClient.unsubscribe(w8Key);
   }
 }

@@ -1,5 +1,4 @@
 import { RedisBus } from './redisBus.js';
-import { setTimeout } from 'timers/promises';
 import test from 'node:test';
 import assert from 'node:assert';
 
@@ -29,7 +28,7 @@ await test('Redis bus pub/sub', async () => {
     redisPubSub.publish('dad', 'Paul'),
     redisPubSub.publish('mom', 'John'),
   ]);
-  await setTimeout(1000);
+  await redisPubSub.waitPubSub();
   assert.strictEqual(arr.length, 4);
 }).finally(async () => {
   await redisPubSub.disconnect();
@@ -46,14 +45,15 @@ await test('Redis bus command', async () => {
     hiDad: ({ data }) => 'Hi dad ' + data,
   };
   await redisCommand.register(serviceName, commands);
-  await setTimeout(1000);
 
   const hiMomSent = { data: 'I am back home', metadata: null };
   const hiMomGreet = await redisCommand.call('greet.hiMom', hiMomSent);
+  await redisCommand.waitPubSub();
   assert.strictEqual('Hi mom ' + hiMomSent.data, hiMomGreet);
 
   const hiDadSent = { data: 'Can I borrow your car?', metadata: null };
   const hiDadGreet = await redisCommand.call('greet.hiDad', hiDadSent);
+  await redisCommand.waitPubSub();
   assert.strictEqual('Hi dad ' + hiDadSent.data, hiDadGreet);
 }).finally(async () => {
   await redisCommand.disconnect();
