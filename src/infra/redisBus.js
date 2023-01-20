@@ -1,12 +1,12 @@
-/**@typedef {import('./.types').FnSubscribe} FnSubscribe*/
-/**@typedef {import('./.types').FnPublish} FnPublish*/
+/**@typedef {import('./.types').AnyFunc} AnyFunc*/
+/**@typedef {import('./.types').AnyServiceCommands} AnyServiceCommands*/
+/**@typedef {import('./.types').AnyEventHandler} AnyEventHandler*/
 /**@typedef {import('./.types').FnCall} FnCall*/
-/**@typedef {import('./.types').FnRegister} FnRegister*/
 /**@typedef {import('./.types').IBus} IBus*/
 /**@typedef {import('./.types').IPubSub} IPubSub*/
 /**@typedef {import('./.types').ICommand} ICommand*/
 /** @typedef {import('./redis').RedisClient} RedisClient */
-import { make } from './redis.js';
+import { create } from './redis.js';
 
 const returnError = async (fn, ...args) => {
   let err = null;
@@ -30,9 +30,9 @@ export class RedisBus {
   /** @type {number} */
   #callId = 0;
   /** @type {RedisClient}*/
-  #subClient = make();
+  #subClient = create();
   /** @type {RedisClient}*/
-  #cmdClient = make();
+  #cmdClient = create();
   constructor() {
     this.#calls;
     this.#callId;
@@ -55,24 +55,40 @@ export class RedisBus {
     ]);
   }
 
+  /**
+   * @param {string} eventName
+   * @param {object} event
+   * @returns {Promise<number>}
+  */
   async publish(eventName, event) {
     if (!this.#publishedOnce) {
-      await this.waitPubSub();
+      await this.pingPubSub();
       this.#publishedOnce = true;
     }
     const json = JSON.stringify(event);
     return this.#cmdClient.publish(eventName, json);
   }
 
+  /**
+   * @param {string} eventName
+   * @param {AnyEventHandler} handler
+   * @returns {Promise<void>}
+  */
   subscribe(eventName, handler) {
     const rawHandler = (raw) => handler(JSON.parse(raw));
     return this.#subClient.subscribe(eventName, rawHandler);
   }
 
+  /** @type {(...eventNames: string[]) => Promise<void>} */
   unsubscribe(...eventNames) {
     return this.#subClient.unsubscribe(...eventNames);
   }
 
+  /**
+   * @param {string} commandName
+   * @param {{data: object, metadata: object}} payload
+   * @returns {Promise<object>}
+  */
   async call(commandName, payload) {
     const [service, cmd] = commandName.split('.');
     if (this.#callId === Number.MAX_VALUE) this.#callId = 0;
@@ -86,28 +102,47 @@ export class RedisBus {
     });
   }
 
+  /**
+   * @param {string} name
+   * @param {AnyServiceCommands} commands
+   * @returns {Promise<void>}
+  */
   async register(name, commands) {
     for (const [cmd, handler] of Object.entries(commands)) {
       const reqKey = `${name}:${cmd}:request`;
       const resKey = `${name}:${cmd}:response`;
-      await this.#subClient.subscribe(resKey, (msg) => {
-        const { response: [err, res], callId } = JSON.parse(msg);
-        const [resolve, reject] = this.#calls.get(callId);
-        if (err) reject(err);
-        else resolve(res);
-      });
-      await this.#subClient.subscribe(reqKey, async (msg) => {
-        const { data, metadata, callId } = JSON.parse(msg);
-        const response = await returnError(handler, { data, metadata });
-        const packet = JSON.stringify({ response, callId });
-        await this.#cmdClient.publish(resKey, packet);
-      });
+      await this.#listenToResponce(resKey);
+      await this.#listenToRequest(reqKey, resKey, handler);
     }
-    return this.waitPubSub();
+    return this.pingPubSub();
   }
 
-  async waitPubSub() {
-    const w8Key = 'system:waitPubSub';
+  /** @param {string} resKey */
+  #listenToResponce(resKey) {
+    return this.#subClient.subscribe(resKey, (msg) => {
+      const { response: [err, res], callId } = JSON.parse(msg);
+      const [resolve, reject] = this.#calls.get(callId);
+      if (err) reject(err);
+      else resolve(res);
+    });
+  }
+
+  /**
+   * @param {string} reqKey
+   * @param {string} resKey
+   * @param {AnyFunc} handler
+  */
+  #listenToRequest(reqKey, resKey, handler) {
+    return this.#subClient.subscribe(reqKey, async (msg) => {
+      const { data, metadata, callId } = JSON.parse(msg);
+      const response = await returnError(handler, { data, metadata });
+      const packet = JSON.stringify({ response, callId });
+      await this.#cmdClient.publish(resKey, packet);
+    });
+  }
+
+  async pingPubSub() {
+    const w8Key = 'system:pingPubSub';
     await new Promise(async (resolve, _reject) => {
       await this.#subClient.subscribe(w8Key, (msg) => resolve(msg));
       await this.#cmdClient.publish(w8Key, 'true');

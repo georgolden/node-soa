@@ -28,7 +28,7 @@ await test('Redis bus pub/sub', async () => {
     redisPubSub.publish('dad', 'Paul'),
     redisPubSub.publish('mom', 'John'),
   ]);
-  await redisPubSub.waitPubSub();
+  await redisPubSub.pingPubSub();
   assert.strictEqual(arr.length, 4);
 }).finally(async () => {
   await redisPubSub.disconnect();
@@ -48,12 +48,12 @@ await test('Redis bus command', async () => {
 
   const hiMomSent = { data: 'I am back home', metadata: null };
   const hiMomGreet = await redisCommand.call('greet.hiMom', hiMomSent);
-  await redisCommand.waitPubSub();
+  await redisCommand.pingPubSub();
   assert.strictEqual('Hi mom ' + hiMomSent.data, hiMomGreet);
 
   const hiDadSent = { data: 'Can I borrow your car?', metadata: null };
   const hiDadGreet = await redisCommand.call('greet.hiDad', hiDadSent);
-  await redisCommand.waitPubSub();
+  await redisCommand.pingPubSub();
   assert.strictEqual('Hi dad ' + hiDadSent.data, hiDadGreet);
 }).finally(async () => {
   await redisCommand.disconnect();

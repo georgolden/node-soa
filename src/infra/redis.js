@@ -2,7 +2,7 @@
 import { createClient } from 'redis';
 import { redis } from './config.js';
 
-export const make = () => {
+export const create = () => {
   const client = createClient({ url: redis.connectionUrl });
   client.on('error', console.error);
   return client;
@@ -13,7 +13,7 @@ export const start = async () => {
   if (!redis.connectionUrl) {
     throw new Error('Please set REDIS_URL environment variable');
   };
-  const client = make();
+  const client = create();
   await client.connect();
   return client;
 };

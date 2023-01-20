@@ -4,7 +4,6 @@ export class FastifyRouteMapper {
   }
 
   toFastifyRoute(name, route) {
-    console.dir({ route });
     const { method, url, command } = route;
     return {
       method,
