@@ -28,8 +28,9 @@ export const signin = async (deps, { data }) => {
   const { bus, db, cache } = deps;
   const { email, password } = data;
 
-  const { id, password: hash } = await user.selectByEmail(db, email);
-  if (!id) throw new Error('No user found');
+  const userData = await user.selectByEmail(db, email);
+  if (!userData || !userData.id) throw new Error('No user found');
+  const { id, password: hash } = userData;
   const valid = await validatePass(password, hash);
   if (!valid) throw new Error('Invalid password');
 

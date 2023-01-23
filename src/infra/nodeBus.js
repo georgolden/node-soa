@@ -8,11 +8,12 @@
 import { EventEmitter } from 'node:events';
 
 /**
-  * @implements {IBus}
-  * @implements {IPubSub}
-  * @implements {ICommand}
+ * Implementation of a bus for node js single process
+ * @implements {IBus}
+ * @implements {IPubSub}
+ * @implements {ICommand}
   */
-export class Bus {
+export class NodeBus {
   #ee;
   #services;
   constructor() {
@@ -43,3 +44,5 @@ export class Bus {
     this.#services.set(name, commands);
   }
 }
+
+export const createNodeBus = () => Promise.resolve(new NodeBus());

@@ -1,4 +1,4 @@
-import { Bus } from '../../infra/bus.js';
+import { NodeBus } from '../../infra/nodeBus.js';
 import * as postgres from '../../infra/pg.js';
 import * as redis from '../../infra/redis.js';
 import test from 'node:test';
@@ -9,7 +9,7 @@ import { init } from './init.js';
 
 const db = await postgres.start();
 const cache = await redis.start();
-const bus = new Bus();
+const bus = new NodeBus();
 
 const deps = { bus, cache, db };
 

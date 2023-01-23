@@ -52,5 +52,5 @@ export const init = (deps) => ({
 /** @type {ServiceMetadata} */
 export const metadata = {
   name: 'auth',
-  dependencies: ['db', 'cache', 'bus'],
+  dependencies: ['db', 'cache', 'nodeBus'],
 };

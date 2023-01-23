@@ -6,7 +6,7 @@
   "main": "main.js",
   "scripts": {
     "check": "npx tsc --project .",
-    "start": "node main.js",
+    "start": "export $(grep -v '^#' .env | xargs) && node ./src/app.js",
     "lint": "eslint .",
     "fmt": "eslint --fix .",
     "test": "export $(grep -v '^#' .env | xargs) && tap --no-coverage"
@@ -32,7 +32,7 @@
     "redis": "^4.5.1"
   },
   "devDependencies": {
-    "@oldbros/shiftjs": "^1.0.0-beta2",
+    "@oldbros/shiftjs": "^1.0.0-beta7",
     "@oldbros/tsconfig": "^1.0.1",
     "@types/node": "^18.11.18",
     "@types/pg": "^8.6.6",

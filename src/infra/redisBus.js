@@ -20,6 +20,8 @@ const returnError = async (fn, ...args) => {
 };
 
 /**
+ * Implementation of a bus with PubSub and Command
+ * using redis and redis publish subscribe
  * @implements {IBus}
  * @implements {IPubSub}
  * @implements {ICommand}
@@ -150,3 +152,5 @@ export class RedisBus {
     return this.#subClient.unsubscribe(w8Key);
   }
 }
+
+export const createRedisBus = () => new RedisBus().connect();
