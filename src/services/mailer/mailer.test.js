@@ -1,7 +1,5 @@
 import assert from 'node:assert';
-import { internal } from './mailer.js';
-
-const { sendEmail } = internal;
+import { sendEmail } from './mailer.js';
 
 (async () => {
   const email = 'example@example.com';

@@ -8,15 +8,15 @@ export const create = () => {
   return client;
 };
 
-/** @returns {Promise<RedisClient>} */
-export const start = async () => {
+/** @returns {import('./types').Factory<RedisClient>} */
+export const factory = () => {
   if (!redis.connectionUrl) {
     throw new Error('Please set REDIS_URL environment variable');
+  }
+  const instance = create();
+  return {
+    start: instance.connect.bind(instance),
+    instance,
+    stop: instance.disconnect.bind(instance),
   };
-  const client = create();
-  await client.connect();
-  return client;
 };
-
-/** @type {(cache: RedisClient) => Promise<void>}*/
-export const stop = (cache) => cache.disconnect();

@@ -1,11 +1,15 @@
-/**@typedef {import('./.types').AnyFunc} AnyFunc*/
-/**@typedef {import('./.types').AnyServiceCommands} AnyServiceCommands*/
-/**@typedef {import('./.types').AnyEventHandler} AnyEventHandler*/
-/**@typedef {import('./.types').FnCall} FnCall*/
-/**@typedef {import('./.types').IBus} IBus*/
-/**@typedef {import('./.types').IPubSub} IPubSub*/
-/**@typedef {import('./.types').ICommand} ICommand*/
-/** @typedef {import('./redis').RedisClient} RedisClient */
+/**
+ * @typedef {import('./types').AnyFunc} AnyFunc
+ * @typedef {import('./types').IPayload} IPayload
+ * @typedef {import('./types').AnyServiceCommands} AnyServiceCommands
+ * @typedef {import('./types').AnyEventHandler} AnyEventHandler
+ * @typedef {import('./types').FnCall} FnCall
+ * @typedef {import('./types').IBus} IBus
+ * @typedef {import('./types').IPubSub} IPubSub
+ * @typedef {import('./types').ICommand} ICommand
+ *  @typedef {import('./redis').RedisClient} RedisClient
+*/
+import { partialObjectLast } from '@oldbros/shiftjs';
 import { create } from './redis.js';
 
 const returnError = async (fn, ...args) => {
@@ -25,7 +29,7 @@ const returnError = async (fn, ...args) => {
  * @implements {IBus}
  * @implements {IPubSub}
  * @implements {ICommand}
- */
+*/
 export class RedisBus {
   #publishedOnce = false;
   #calls = new Map();
@@ -40,6 +44,11 @@ export class RedisBus {
     this.#callId;
     this.#subClient;
     this.#cmdClient;
+    this.senders = ['publish', 'call'];
+    this.subscribe = this.subscribe.bind(this);
+    this.publish = this.publish.bind(this);
+    this.call = this.call.bind(this);
+    this.register = this.register.bind(this);
   }
 
   async connect() {
@@ -88,16 +97,16 @@ export class RedisBus {
 
   /**
    * @param {string} commandName
-   * @param {{data: object, metadata: object}} payload
+   * @param {IPayload} payload
    * @returns {Promise<object>}
   */
   async call(commandName, payload) {
     const [service, cmd] = commandName.split('.');
     if (this.#callId === Number.MAX_VALUE) this.#callId = 0;
     const callId = this.#callId++;
-    const { data, metadata } = payload;
+    const { data, meta } = payload;
     const requestKey = `${service}:${cmd}:request`;
-    const raw = JSON.stringify({ data, metadata, callId });
+    const raw = JSON.stringify({ data, meta, callId });
     await this.#cmdClient.publish(requestKey, raw);
     return new Promise((resolve, reject) => {
       this.#calls.set(callId, [resolve, reject]);
@@ -136,8 +145,8 @@ export class RedisBus {
   */
   #listenToRequest(reqKey, resKey, handler) {
     return this.#subClient.subscribe(reqKey, async (msg) => {
-      const { data, metadata, callId } = JSON.parse(msg);
-      const response = await returnError(handler, { data, metadata });
+      const { data, meta, callId } = JSON.parse(msg);
+      const response = await returnError(handler, { data, meta });
       const packet = JSON.stringify({ response, callId });
       await this.#cmdClient.publish(resKey, packet);
     });
@@ -145,12 +154,38 @@ export class RedisBus {
 
   async pingPubSub() {
     const w8Key = 'system:pingPubSub';
-    await new Promise(async (resolve, _reject) => {
-      await this.#subClient.subscribe(w8Key, (msg) => resolve(msg));
-      await this.#cmdClient.publish(w8Key, 'true');
+    await new Promise((resolve, reject) => {
+      this.#subClient.subscribe(w8Key, (msg) => resolve(msg))
+        .catch(reject)
+        .then(() =>
+          this.#cmdClient.publish(w8Key, 'true')
+            .catch(reject),
+        );
     });
     return this.#subClient.unsubscribe(w8Key);
   }
+
+  /** @type {(meta: object) => this} */
+  withMeta(meta) {
+    return new Proxy(this, {
+      get(target, prop) {
+        const method = target[prop];
+        if (typeof prop === 'string' && target.senders.includes(prop)) {
+          return partialObjectLast(method, { meta });
+        } else {
+          return method;
+        }
+      },
+    });
+  }
 }
 
-export const createRedisBus = () => new RedisBus().connect();
+/** @returns {import('./types').Factory<RedisBus>} */
+export const factory = () => {
+  const instance = new RedisBus();
+  return {
+    start: instance.connect.bind(instance),
+    instance,
+    stop: instance.disconnect.bind(instance),
+  };
+};

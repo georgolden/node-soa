@@ -1,6 +1,6 @@
-const generateEmail = ({ title, email }) => `${title} ${email}`;
+export const generateEmail = ({ title, email }) => `${title} ${email}`;
 
-const sendEmail = ({ email }) => {
+export const sendEmail = ({ email }) => {
   console.log('Email sent');
   return Promise.resolve(email);
 };
@@ -20,5 +20,3 @@ export const signupEventHandler = async (deps, event) => {
   });
   await sendEmail({ email });
 };
-
-export const internal = { generateEmail, sendEmail };

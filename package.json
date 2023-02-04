@@ -32,13 +32,14 @@
     "redis": "^4.5.1"
   },
   "devDependencies": {
-    "@oldbros/shiftjs": "^1.0.0-beta7",
+    "@oldbros/shiftjs": "^1.0.0-beta9",
     "@oldbros/tsconfig": "^1.0.1",
     "@types/node": "^18.11.18",
     "@types/pg": "^8.6.6",
     "@types/ws": "^8.5.3",
     "eslint": "^8.31.0",
     "eslint-config-oldbros": "^1.0.2",
+    "swayer": "git+https://github.com/metarhia/swayer.git#feat/framework-enhancements",
     "tap": "^16.3.4",
     "typescript": "^4.9.4"
   }

@@ -38,23 +38,28 @@ const redisCommand = new RedisBus();
 
 await test('Redis bus command', async () => {
   await redisCommand.connect();
-
   const serviceName = 'greet';
   const commands = {
-    hiMom: ({ data }) => 'Hi mom ' + data,
-    hiDad: ({ data }) => 'Hi dad ' + data,
+    hiMom: ({ data }) => 'Hi mom ' + data.message,
+    hiDad: ({ data }) => 'Hi dad ' + data.message,
+    hiMeta: ({ meta, data }) => meta.message + data.message,
   };
   await redisCommand.register(serviceName, commands);
 
-  const hiMomSent = { data: 'I am back home', metadata: null };
+  const hiMomSent = { data: { message: 'I am back home' } };
   const hiMomGreet = await redisCommand.call('greet.hiMom', hiMomSent);
   await redisCommand.pingPubSub();
-  assert.strictEqual('Hi mom ' + hiMomSent.data, hiMomGreet);
+  assert.strictEqual('Hi mom ' + hiMomSent.data.message, hiMomGreet);
 
-  const hiDadSent = { data: 'Can I borrow your car?', metadata: null };
+  const hiDadSent = { data: { message: 'Can I borrow your car?' } };
   const hiDadGreet = await redisCommand.call('greet.hiDad', hiDadSent);
   await redisCommand.pingPubSub();
-  assert.strictEqual('Hi dad ' + hiDadSent.data, hiDadGreet);
+  assert.strictEqual('Hi dad ' + hiDadSent.data.message, hiDadGreet);
+
+  const hiMetaSent = { data: { message: 'data' } };
+  const metaBus = redisCommand.withMeta({ message: 'meta' });
+  const gotHiMeta = await metaBus.call('greet.hiMeta', hiMetaSent);
+  assert.strictEqual('metadata', gotHiMeta);
 }).finally(async () => {
   await redisCommand.disconnect();
 });

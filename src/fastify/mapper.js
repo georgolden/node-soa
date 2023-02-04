@@ -10,7 +10,7 @@ export class FastifyRouteMapper {
       url: `/${name}${url}`,
       handler: async (req, res) => {
         const data = req.body;
-        const payload = { data };
+        const payload = { data, meta: { traceId: 1 } };
         const response = await this.bus.call(command, payload);
         res.code(200).send(response);
       },

@@ -1,5 +1,8 @@
-/** @typedef {import('../../infra/.types').IService} IService */
-/** @typedef {import('../../infra/.types').ServiceMetadata} ServiceMetadata */
+/**
+ * @typedef {import('../../dfs/types').IService} IService
+ * @typedef {import('../../dfs/types').ServiceMetadata} ServiceMetadata
+ * @typedef {import('../../dfs/types').ServiceConfig} ServiceConfig
+*/
 import { partial } from '@oldbros/shiftjs';
 import { signinEventHandler, signupEventHandler } from './mailer.js';
 
@@ -16,4 +19,10 @@ export const init = (deps) => ({
 export const metadata = {
   name: 'mailer',
   dependencies: ['nodeBus'],
+};
+
+/** @type {ServiceConfig} */
+export const config = {
+  hideMeta: true,
+  scope: 'local',
 };

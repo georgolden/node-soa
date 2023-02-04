@@ -1,5 +1,8 @@
-/** @typedef {import('./.types').Dependencies} Deps */
-/** @typedef {import('./.types').User} User */
+/**
+ * @typedef {import('./types').Dependencies} Deps
+ * @typedef {import('./types').User} User
+ * @typedef {import('./types').SigninPayload} SigninPayload
+*/
 import { user } from './models/user.js';
 import { session } from './models/session.js';
 import {
@@ -9,34 +12,32 @@ import {
 
 /**
  * @param {Deps} deps
- * @param {{data: User}} payload
+ * @param {{data: User, meta?: object}} payload
  * @returns {Promise<void>}
  */
 export const signup = async (deps, { data }) => {
   const { bus, db } = deps;
   const hash = await hashPassword(data.password);
   await user.insert(db, { ...data, password: hash });
-  bus.publish('auth.signup.event', { email: data.email });
+  bus.publish('auth.signup.event', { data: { email: data.email } });
 };
 
 /**
  * @param {Deps} deps
- * @param {{data: { email: string, password: string }}} payload
+ * @param {SigninPayload} payload
  * @returns {Promise<{ token: string }>}
  */
 export const signin = async (deps, { data }) => {
   const { bus, db, cache } = deps;
   const { email, password } = data;
-
   const userData = await user.selectByEmail(db, email);
   if (!userData || !userData.id) throw new Error('No user found');
   const { id, password: hash } = userData;
   const valid = await validatePass(password, hash);
   if (!valid) throw new Error('Invalid password');
-
   const token = generateToken(id);
   await session.start(cache, token, `${id}:${email}`);
-  bus.publish('auth.signin.event', { email: user.email });
+  bus.publish('auth.signin.event', { data: userData });
   return { token };
 };
 
@@ -53,4 +54,12 @@ export const validate = async (deps, { data }) => {
   const [userId] = sessionId.split(':');
   const valid = validateToken(userId, token);
   return { valid };
+};
+
+export const example = {
+  before: [(deps, { meta, data }) => console.log({ meta, data })],
+  method: async (deps, { data }) => deps.cache.get(data.key),
+  after: [(deps, { meta, data }) => console.log({ meta, data })],
+  domainError: [],
+  infraError: [],
 };

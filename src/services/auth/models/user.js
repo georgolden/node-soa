@@ -1,5 +1,5 @@
-/** @typedef {import('../.types').Db} Db */
-/** @typedef {import('../.types').User} User */
+/** @typedef {import('../types').Db} Db */
+/** @typedef {import('../types').User} User */
 /**
  * @param {Db} db
  * @param {User} user

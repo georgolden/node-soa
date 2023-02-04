@@ -2,14 +2,16 @@
 import metasql from 'metasql';
 import { pg as pgConf } from './config.js';
 
-/** @returns {Promise<Db>} */
-export const start = async () => {
+/** @returns {import('./types').Factory<Db>} */
+export const factory = () => {
   if (!pgConf.connectionUrl) {
     throw new Error('Please set PG_URL environment variable');
   };
+  const connectionString = pgConf.connectionUrl;
   // @ts-ignore
-  return new metasql.Database({ connectionString: pgConf.connectionUrl });
+  const instance = new metasql.Database({ connectionString });
+  return {
+    instance,
+    stop: instance.close.bind(instance),
+  };
 };
-
-/** @type {(db: Db) => Promise<void>} */
-export const stop = async (db) => db.close();

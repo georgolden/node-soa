@@ -10,15 +10,11 @@ export const initServices = async () => {
   const nodeBus = await createNodeBus();
   const redisBus = await createRedisBus();
   const allDeps = { nodeBus, redisBus, cache, db };
-  for (const { metadata, init } of serviceDeclarations) {
+  for (const { metadata, init, config } of serviceDeclarations) {
     /** @type {any} */
     const deps = {};
     for (const dep of metadata.dependencies) {
-      if (dep.endsWith('Bus')) {
-        deps.bus = allDeps[dep];
-      } else {
-        deps[dep] = allDeps[dep];
-      }
+      // if (dep === 'bus')
     };
     const service = init(deps);
     const { commands, eventHandlers } = service;
