@@ -12,16 +12,11 @@
 import { partialObjectLast } from '@oldbros/shiftjs';
 import { create } from './redis.js';
 
-const returnError = async (fn, ...args) => {
-  let err = null;
-  let res = null;
-  try {
-    res = await fn(...args);
-  } catch (error) {
-    err = error;
-  }
-  return [err, res];
-};
+const returnError = (fn, ...args) => new Promise((resolve) => {
+  fn(...args)
+    .catch((err) => resolve([err, null]))
+    .then((res) => resolve([null, res]));
+});
 
 /**
  * Implementation of a bus with PubSub and Command
