@@ -1,11 +1,11 @@
 import { NodeBus } from '../../infra/nodeBus.js';
 import * as postgres from '../../infra/pg.js';
-import * as redis from '../../infra/redis.js';
+import * as redis from '../../infra/redisCache.js';
 import test from 'node:test';
 import assert from 'node:assert';
 import { randomUUID } from 'node:crypto';
 
-import { init } from './init.js';
+import { init } from './auth.service.js/index.js';
 
 const db = await postgres.start();
 const cache = await redis.start();

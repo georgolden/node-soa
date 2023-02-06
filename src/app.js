@@ -1,12 +1,19 @@
 import { fastify } from 'fastify';
 import serverConf from './config/server.js';
-import { initServices } from './init/initServices.js';
 import { initRoutes } from './init/initRoutes.js';
+import { getFactories } from './infra/infra.index.js';
+import { DiContainer, initServices } from './dfs/diContainer.js';
+import serviceFactories from './services/services.index.js';
 
 const server = fastify({ logger: true });
 
-const { nodeBus } = await initServices();
-const fastifyRoutes = initRoutes({ bus: nodeBus });
+const depFactories = getFactories();
+const diContainer = new DiContainer(depFactories);
+await initServices(diContainer, serviceFactories);
+
+await Promise.all(diContainer.init());
+
+const fastifyRoutes = initRoutes({ bus: diContainer.instances.nodeBus });
 
 console.dir(fastifyRoutes, { depth: 10 });
 

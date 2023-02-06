@@ -7,14 +7,11 @@ type DepShorthand = string;
 type DepOpts = { realName?: string; useFactory?: boolean };
 type DepLongForm = [DepShorthand, DepShorthand | DepOpts];
 
-export type ServiceMetadata = {
-  name: string;
-  dependencies: Array<DepShorthand | DepLongForm>;
-};
-
 export type ServiceConfig = {
   hideMeta: boolean;
   scope: 'local' | 'infra';
+  name: string;
+  dependencies: Array<DepShorthand | DepLongForm>;
 };
 
 export interface IPayload {
@@ -30,3 +27,8 @@ export interface IService {
   commands: AnyServiceCommands | null;
   eventHandlers: AnyEventHandlers | null;
 }
+
+export type DomainService<T> = {
+  commmads?: T[keyof T];
+  eventHandlers?: T[keyof T];
+};

@@ -7,10 +7,10 @@
  * @typedef {import('./types').IBus} IBus
  * @typedef {import('./types').IPubSub} IPubSub
  * @typedef {import('./types').ICommand} ICommand
- *  @typedef {import('./redis').RedisClient} RedisClient
+ *  @typedef {import('./redisCache').RedisClient} RedisClient
 */
 import { partialObjectLast } from '@oldbros/shiftjs';
-import { create } from './redis.js';
+import { create } from './redisCache.js';
 
 const returnError = (fn, ...args) => new Promise((resolve) => {
   fn(...args)

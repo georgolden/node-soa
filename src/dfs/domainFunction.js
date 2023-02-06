@@ -29,3 +29,30 @@ export const createDomainFunction = (sourceFn, deps, config) => {
     return partialOne(sourceFn, deps);
   }
 };
+
+export const createDomainService = (source, deps, config) => {
+  console.dir({ source, deps, config });
+  const [cmds, eHanlers] = source;
+  /** @type {*} { commands, eventHanlers } */
+  const service = {};
+  if (cmds === null) {
+    service.commands === null;
+  } else {
+    service.commands = {};
+    for (const [cmdName, cmdFn] of Object.entries(cmds)) {
+      const domainFunction = createDomainFunction(cmdFn, deps, config);
+      service.commands[cmdName] = domainFunction;
+    }
+  }
+  if (eHanlers === null) {
+    service.eventHandlers === null;
+  } else {
+    service.eventHandlers = {};
+    for (const [eHanlerName, eHandlerFn] of Object.entries(eHanlers)) {
+      const domainFunction = createDomainFunction(eHandlerFn, deps, config);
+      service.commands[eHanlerName] = domainFunction;
+    }
+
+  }
+  return service;
+};

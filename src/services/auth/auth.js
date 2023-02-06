@@ -55,11 +55,3 @@ export const validate = async (deps, { data }) => {
   const valid = validateToken(userId, token);
   return { valid };
 };
-
-export const example = {
-  before: [(deps, { meta, data }) => console.log({ meta, data })],
-  method: async (deps, { data }) => deps.cache.get(data.key),
-  after: [(deps, { meta, data }) => console.log({ meta, data })],
-  domainError: [],
-  infraError: [],
-};

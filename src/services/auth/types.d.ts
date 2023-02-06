@@ -1,10 +1,10 @@
-import { RedisClient as Redis } from '../../infra/redis';
+import { RedisClient as Redis } from '../../infra/redisCache';
 import { Db } from '../../infra/pg';
 import { NodeBus } from '../../infra/nodeBus';
 import { IService } from '../../dfs/types';
 
 export { Db } from '../../infra/pg';
-export { RedisClient as Redis } from '../../infra/redis';
+export { RedisClient as Redis } from '../../infra/redisCache';
 
 export type Dependencies = {
   bus: NodeBus;

@@ -1,10 +1,10 @@
 import { pipe, partial } from '@oldbros/shiftjs';
 import { NodeBus } from '../../infra/nodeBus.js';
 import * as postgres from '../../infra/pg.js';
-import * as redis from '../../infra/redis.js';
+import * as redis from '../../infra/redisCache.js';
 
 import { signin, signup, validate } from './auth.js';
-import { metadata } from './init.js';
+import { metadata } from './auth.service.js/index.js';
 
 const db = await postgres.start();
 const cache = await redis.start();

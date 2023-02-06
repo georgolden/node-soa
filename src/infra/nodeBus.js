@@ -36,15 +36,16 @@ export class NodeBus {
   }
 
   /** @type {FnPublish} */
-  publish(eventName, event) {
-    return this.#ee.emit(eventName, event);
+  publish(eventName, { meta, data }) {
+    return this.#ee.emit(eventName, { meta, data });
   }
 
   /** @type {FnCall} */
-  call(commandName, payload) {
+  call(commandName, { meta, data }) {
     const [serviceName, cmdName] = commandName.split('.');
     const service = this.#services.get(serviceName);
-    return service[cmdName](payload);
+    console.dir({ service, cmdName, serviceName });
+    return service.commands[cmdName]({ meta, data });
   }
 
   /** @type {FnRegister} */

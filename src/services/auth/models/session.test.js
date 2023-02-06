@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { randomUUID } from 'node:crypto';
-import { start, stop } from '../../../infra/redis.js';
+import { start, stop } from '../../../infra/redisCache.js';
 import { session } from './session.js';
 
 const cache = await start();
