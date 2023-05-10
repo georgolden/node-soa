@@ -1,6 +1,4 @@
 export class DiContainer {
-  factories = new Map();
-  rawInstances = new Map();
   instances = {};
   starts = [];
   stops = [];
@@ -8,11 +6,9 @@ export class DiContainer {
 
   constructor(depFactories) {
     for (const [name, factory] of Object.entries(depFactories)) {
-      this.factories.set(name, factory);
       const dep = factory();
       if (dep.start) this.starts.push(dep.start);
       if (dep.stop) this.stops.push(dep.stop);
-      this.rawInstances.set(name, dep);
       this.instances[name] = dep.instance;
     }
   }
