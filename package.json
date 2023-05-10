@@ -6,8 +6,10 @@
   "main": "main.js",
   "scripts": {
     "check": "npx tsc --project .",
-    "start": "node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "export $(grep -v '^#' .env | xargs) && node ./src/app.js",
+    "lint": "eslint .",
+    "fmt": "eslint --fix .",
+    "test": "export $(grep -v '^#' .env | xargs) && tap --no-coverage"
   },
   "repository": {
     "type": "git",
@@ -22,17 +24,23 @@
   "engines": {
     "node": "18"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@oldbros/shiftjs": "^1.0.0-beta9",
+    "fastify": "^4.10.2",
+    "metasql": "^2.1.2",
+    "metautil": "^3.6.0",
+    "pg": "^8.8.0",
+    "redis": "^4.5.1"
+  },
   "devDependencies": {
-    "@types/node": "^18.7.8",
+    "@oldbros/tsconfig": "^1.0.1",
+    "@types/node": "^18.11.18",
+    "@types/pg": "^8.6.6",
     "@types/ws": "^8.5.3",
-    "eslint": "^8.22.0",
-    "eslint-config-metarhia": "^8.1.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "metatests": "^0.8.2",
-    "prettier": "^2.7.1",
-    "typescript": "^4.7.4"
+    "eslint": "^8.31.0",
+    "eslint-config-oldbros": "^1.0.2",
+    "swayer": "git+https://github.com/metarhia/swayer.git#feat/framework-enhancements",
+    "tap": "^16.3.4",
+    "typescript": "^4.9.4"
   }
 }
