@@ -1,4 +1,4 @@
-/**@typedef {import('../router').HttpRoute} HttpRoute */
+/**@typedef {import('../typesForRouter').HttpRoute} HttpRoute */
 
 /**@type {HttpRoute} */
 const deposit = {
@@ -6,11 +6,6 @@ const deposit = {
   url: 'deposit',
   command: 'wallet.deposit',
   dataSource: 'JSONBody',
-  hooks: {
-    beforeRequest: [
-
-    ],
-  },
 };
 
 export default [deposit];
